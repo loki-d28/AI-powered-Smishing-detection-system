@@ -51,6 +51,6 @@ def predict():
             result = "This is a Smish message, so avoid clicking links and be cautious!...⚠️"
         return send_file('result.html', result=result)  
     #print(result)
-    return redirect(url_for('home'))
+    return redirect('/')
 if __name__ == '__main__':
     app.run(debug=True)
