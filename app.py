@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template,send_file ,redirect, url_for
 import pandas as pd
 import numpy as np
 import re
@@ -22,16 +22,16 @@ def preprocess_input(text):
     return result
 @app.route('/')
 def home():
-    return render_template('web.html')
+    return send_file('web.html')
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return send_file('about.html')
 @app.route('/support')
 def support():
-    return render_template('support.html')
+    return send_file('support.html')
 @app.route('/C')
 def guard():
-    return render_template('C.html')
+    return send_file('C.html')
 @app.route('/result', methods=['POST', 'GET'])
 def predict():
     if request.method == 'POST':
@@ -49,7 +49,7 @@ def predict():
     #print(result)
         else:
             result = "This is a Smish message, so avoid clicking links and be cautious!...⚠️"
-        return render_template('result.html', result=result)  
+        return send_file('result.html', result=result)  
     #print(result)
         return redirect(url_for('home'))
 if __name__ == '__main__':
