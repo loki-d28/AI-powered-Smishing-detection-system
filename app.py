@@ -49,7 +49,7 @@ def predict():
     #print(result)
         else:
             result = "This is a Smish message, so avoid clicking links and be cautious!...⚠️"
-        return render_template('result.html', result=result)  
+        return send_file('result.html', result=result)  
     #print(result)
     return redirect('/')
 if __name__ == '__main__':
