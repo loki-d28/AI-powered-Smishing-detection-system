@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template,send_file ,redirect, url_for
+from flask import Flask, request, render_template,send_file ,redirect, url_for,send_from_directory
+import os
 import pandas as pd
 import numpy as np
 import re
@@ -8,11 +9,26 @@ from tensorflow.keras.models import load_model
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 nltk.download('stopwords')
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 app=Flask(__name__,template_folder='.')
 # Load model and vectorizer
 model = load_model('smish_model.h5')  # Load the model
 with open('tfidf_vec.pkl', 'rb') as f:
     tfidf_vec = pickle.load(f)
+
+
+
+
+# Create a static folder if it doesn't exist
+os.makedirs('static', exist_ok=True)
+
+# Add this route to your Flask app
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
+
 
 # Preprocessing input text function
 def preprocess_input(text):
@@ -50,7 +66,31 @@ def predict():
     #print(result)
         else:
             result = "This is a Smish message, so avoid clicking links and be cautious!...⚠️"
-        return render_template('result.html', result=result)  
+        try:
+                return render_template('result.html', result=result)
+            except Exception as template_error:
+                logger.error(f"Template rendering error: {template_error}")
+                
+                # Fallback to manual template handling
+                try:
+                    with open('result.html', 'r') as file:
+                        content = file.read()
+                    
+                    # Replace template variables
+                    content = content.replace('{{ result }}', result)
+                    
+                    # Handle conditional styling
+                    if "safe" in result.lower():
+                        content = content.replace('{% if "safe" in result.lower() %}green{% else %}red{% endif %}', 'green')
+                    else:
+                        content = content.replace('{% if "safe" in result.lower() %}green{% else %}red{% endif %}', 'red')
+                    
+                    return content
+                except Exception as manual_error:
+                    logger.error(f"Manual template handling error: {manual_error}")
+                    return f"Error processing result: {str(manual_error)}", 500
+        
+        
     #print(result)
     return redirect('/')
 if __name__ == '__main__':
