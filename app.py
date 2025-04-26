@@ -7,7 +7,7 @@ import nltk
 from tensorflow.keras.models import load_model
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
-app=Flask(__name__)
+app=Flask(__name__,template_folder=',')
 # Load model and vectorizer
 model = load_model('smish_model.h5')  # Load the model
 with open('tfidf_vec.pkl', 'rb') as f:
