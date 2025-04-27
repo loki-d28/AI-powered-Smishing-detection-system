@@ -62,35 +62,13 @@ def predict():
             # Determine result
             if prediction[0][0] >= 0.7:
                 result = "This is a Ham message, so safe to use...😇💬"
+                result_color = "green"
             else:
                 result = "This is a Smish message, so avoid clicking links and be cautious!...⚠️"
+                result_color = "red"
             
-            # Render template with result
-            try:
-                return render_template('result.html', result=result)
-            except Exception as template_error:
-                # If template rendering fails, try manual rendering
-                try:
-                    with open('result.html', 'r') as file:
-                        html_content = file.read()
-                    
-                    # Simple string replacement for the template variables
-                    html_content = html_content.replace('{{ result }}', result)
-                    
-                    if "safe" in result.lower():
-                        html_content = html_content.replace(
-                            '{% if "safe" in result.lower() %}green{% else %}red{% endif %}', 
-                            'green'
-                        )
-                    else:
-                        html_content = html_content.replace(
-                            '{% if "safe" in result.lower() %}green{% else %}red{% endif %}', 
-                            'red'
-                        )
-                    
-                    return html_content
-                except Exception as file_error:
-                    return f"Error processing result: {file_error}"
+            # Render template with result and color
+            return render_template('result.html', result=result, result_color=result_color)
         
         except Exception as e:
             return f"Error processing your request: {e}"
